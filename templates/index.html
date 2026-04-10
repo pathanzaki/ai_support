@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>AI Support Chatbot</title>
+</head>
+
+<body>
+
+<h2>Customer Support AI</h2>
+
+<input id="msg" placeholder="Ask your question">
+<button onclick="send()">Send</button>
+<button onclick="startVoice()">🎤 Speak</button>
+
+<p id="response"></p>
+
+<script>
+
+function send(){
+
+let msg = document.getElementById("msg").value
+
+fetch("/chat",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({message:msg})
+})
+.then(r=>r.json())
+.then(data=>{
+document.getElementById("response").innerText=data.reply
+
+let speech = new SpeechSynthesisUtterance(data.reply)
+speechSynthesis.speak(speech)
+})
+
+}
+
+function startVoice(){
+
+const recognition = new webkitSpeechRecognition()
+
+recognition.lang="en-US"
+
+recognition.start()
+
+recognition.onresult=function(event){
+
+let text = event.results[0][0].transcript
+
+document.getElementById("msg").value=text
+
+send()
+
+}
+
+}
+
+</script>
+
+</body>
+</html>
